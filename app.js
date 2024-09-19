@@ -1,14 +1,30 @@
 const express = require('express');
 const send = require('send');
 const app = express();
-const port = 3000;
+require('dotenv').config();
+const port =  3000;
+
+//conexcion a la base de datos 
+
+const mongoose = require('mongoose');
+//llevadoa al archivo env
+
+
+//const uri = `mongodb+srv://${usuario}:${password}@mydbtest.efhng.mongodb.net/${dbName}?retryWrites=true&w=majority&appName=mydbtest`;
+const uri = `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@mydbtest.efhng.mongodb.net/${process.env.DBNAME}?retryWrites=true&w=majority&appName=mydbtest`
+
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(()=> console.log('conectado a mongodb')) 
+  .catch(e => console.log('error de conexión', e))
+
 //motor de plantillas
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 
 app.use(express.static(__dirname + "/public"))
 
-app.use('/', require ('./router/rutasWeb.js'))
+app.use('/', require ('./router/rutasWeb.js'));
+app.use('/mascotas', require('./router/mascotas.js'));
 
 app.use((req, res , next) => {
     res.status(404).render("404", {
